@@ -149,28 +149,24 @@ export default function MiniDrawer({ props, children }) {
       )}
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        {openLogin && (
-          <LoginDialog
-            open={openLogin}
-            onOpen={handleLoginDialogOpen}
-            onClose={handleLoginDialogClose}
-            onRegisterOpen={() => {
-              setLoginDialog(false)
-              setRegisterDialog(true)
-            }}
-          />
-        )}
-        {openRegister && (
-          <RegisterDialog
-            open={openRegister}
-            onOpen={handleRegisterDialogOpen}
-            onClose={handleRegisterDialogClose}
-            onLoginOpen={() => {
-              setRegisterDialog(false)
-              setLoginDialog(true)
-            }}
-          />
-        )}
+        <LoginDialog
+          open={openLogin}
+          onOpen={handleLoginDialogOpen}
+          onClose={handleLoginDialogClose}
+          onRegisterOpen={() => {
+            setLoginDialog(false)
+            setRegisterDialog(true)
+          }}
+        />
+        <RegisterDialog
+          open={openRegister}
+          onOpen={handleRegisterDialogOpen}
+          onClose={handleRegisterDialogClose}
+          onLoginOpen={() => {
+            setRegisterDialog(false)
+            setLoginDialog(true)
+          }}
+        />
         {children}
       </main>
     </div>
