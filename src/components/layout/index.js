@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import clsx from 'clsx'
 import { useTheme } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
@@ -21,15 +21,18 @@ import AccountCircle from '@material-ui/icons/AccountCircle'
 import useStyles from './styles'
 import LoginDialog from '../forms/login'
 import RegisterDialog from '../forms/register'
+import auth from '../../services/authServices'
 
-export default function MiniDrawer({ children }) {
+export default function MiniDrawer({ props, children }) {
   const classes = useStyles()
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
   const [openLogin, setLoginDialog] = React.useState(false)
   const [openRegister, setRegisterDialog] = React.useState(false)
-  const login = false
-
+  const [user, setUser] = React.useState('')
+  useEffect(() => {
+    setUser(auth.getCurrentUser())
+  }, [])
   function handleDrawerOpen() {
     setOpen(true)
   }
@@ -58,7 +61,7 @@ export default function MiniDrawer({ children }) {
         })}
       >
         <Toolbar>
-          {login && (
+          {user && (
             <IconButton
               color="inherit"
               aria-label="Open drawer"
@@ -75,23 +78,45 @@ export default function MiniDrawer({ children }) {
             Cinema Studio
           </Typography>
           <div className={classes.grow} />
-          {!login ? (
+          {!user ? (
             <Fragment>
-              <Button disableRipple color="secondary" onClick={handleLoginDialogOpen} className={classes.btnLogin} size="small">
+              <Button
+                disableRipple
+                color="secondary"
+                onClick={handleLoginDialogOpen}
+                className={classes.btnLogin}
+                size="small"
+              >
                 Login
               </Button>
-              <Button color="secondary" onClick={handleRegisterDialogOpen} variant="outlined" size="small">
+              <Button
+                color="secondary"
+                onClick={handleRegisterDialogOpen}
+                variant="outlined"
+                size="small"
+              >
                 Register
               </Button>
             </Fragment>
           ) : (
-            <IconButton edge="end" aria-haspopup="true" color="inherit">
-              <AccountCircle />
-            </IconButton>
+            <Fragment>
+              <IconButton
+                edge="end"
+                aria-haspopup="true"
+                color="inherit"
+                onClick={() => {
+                  auth.logout()
+                  setUser('')
+                }}
+              >
+                <AccountCircle />
+              </IconButton>
+              <Typography variant="body1">{user.name}</Typography>
+            </Fragment>
           )}
         </Toolbar>
       </AppBar>
-      {login && (
+      {user && (
         <Drawer
           variant="permanent"
           className={clsx(classes.drawer, {
@@ -107,11 +132,13 @@ export default function MiniDrawer({ children }) {
           open={open}
         >
           <div className={classes.toolbar}>
-            <IconButton onClick={handleDrawerClose}>{theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}</IconButton>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            </IconButton>
           </div>
           <Divider />
           <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+            {['Now Playing', 'Coming Soon'].map((text, index) => (
               <ListItem classes={{ gutters: classes.listGutters }} button key={text}>
                 <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
                 <ListItemText primary={text} />
